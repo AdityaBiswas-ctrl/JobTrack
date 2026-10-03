@@ -1,0 +1,11 @@
+.env
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv/
+venv/
+jobtrack_test.db
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
