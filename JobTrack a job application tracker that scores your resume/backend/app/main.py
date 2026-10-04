@@ -7,7 +7,6 @@ from app.routers.applications import router as applications_router
 from app.routers.auth import router as auth_router
 from app.routers.reminders import router as reminders_router
 from app.routers.resumes import router as resumes_router
-from app.routers.scoring import router as scoring_router
 from app.routers.stats import router as stats_router
 
 app = FastAPI(title="JobTrack API")
@@ -22,7 +21,6 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(applications_router, prefix="/api")
 app.include_router(reminders_router, prefix="/api")
 app.include_router(resumes_router, prefix="/api")
-app.include_router(scoring_router, prefix="/api")
 app.include_router(stats_router, prefix="/api")
 Base.metadata.create_all(bind=engine)
 

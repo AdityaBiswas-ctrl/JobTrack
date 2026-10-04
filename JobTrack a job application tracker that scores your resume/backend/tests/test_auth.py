@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from app.db import SessionLocal
 from app.config import JWT_SECRET
 from app.main import app
-from app.models import Application, Reminder, Resume, Score, StatusHistory, User
+from app.models import Application, Reminder, Resume, StatusHistory, User
 
 client = TestClient(app)
 
@@ -16,7 +16,6 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def reset_db() -> None:
     db = SessionLocal()
-    db.query(Score).delete()
     db.query(Resume).delete()
     db.query(StatusHistory).delete()
     db.query(Reminder).delete()
@@ -26,7 +25,6 @@ def reset_db() -> None:
     db.close()
     yield
     db = SessionLocal()
-    db.query(Score).delete()
     db.query(Resume).delete()
     db.query(StatusHistory).delete()
     db.query(Reminder).delete()

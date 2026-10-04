@@ -6,8 +6,6 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 JWT_SECRET = os.getenv("JWT_SECRET")
-SCORER_URL = os.getenv("SCORER_URL", "").rstrip("/")
-SCORER_TIMEOUT_SECONDS = float(os.getenv("SCORER_TIMEOUT_SECONDS", "30"))
 ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv("ALLOWED_ORIGINS", "").split(",")
@@ -25,6 +23,3 @@ if not JWT_SECRET:
 
 if len(JWT_SECRET.encode("utf-8")) < 32:
     raise RuntimeError("JWT_SECRET must be at least 32 bytes long")
-
-if SCORER_TIMEOUT_SECONDS <= 0:
-    raise RuntimeError("SCORER_TIMEOUT_SECONDS must be greater than zero")

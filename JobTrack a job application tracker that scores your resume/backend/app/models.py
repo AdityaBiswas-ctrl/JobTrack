@@ -1,6 +1,6 @@
 from datetime import date, datetime, timezone
 
-from sqlalchemy import JSON, Date, DateTime, ForeignKey, Index, LargeBinary, String, Text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, LargeBinary, String, Text
 from sqlalchemy.dialects.mysql import LONGBLOB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -62,13 +62,6 @@ class Application(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-    scores: Mapped[list["Score"]] = relationship(
-        back_populates="application",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
-
-
 class StatusHistory(Base):
     __tablename__ = "status_history"
     __table_args__ = (Index("ix_status_history_application_to_status", "application_id", "to_status"),)
@@ -127,38 +120,3 @@ class Resume(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    scores: Mapped[list["Score"]] = relationship(
-        back_populates="resume",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
-    )
-
-
-class Score(Base):
-    __tablename__ = "scores"
-    __table_args__ = (
-        Index("ix_scores_application_resume_jd", "application_id", "resume_id", "jd_hash"),
-    )
-
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    application_id: Mapped[int] = mapped_column(
-        ForeignKey("applications.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    resume_id: Mapped[int] = mapped_column(
-        ForeignKey("resumes.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-    jd_hash: Mapped[str] = mapped_column(String(64), nullable=False)
-    match_score: Mapped[float | None] = mapped_column(nullable=True)
-    missing_keywords_json: Mapped[list[str] | None] = mapped_column(JSON)
-    scorer_status: Mapped[str] = mapped_column(String(16), nullable=False)
-    latency_ms: Mapped[int] = mapped_column(nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False,
-    )
-
-    application: Mapped[Application] = relationship(back_populates="scores")
-    resume: Mapped[Resume] = relationship(back_populates="scores")

@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 
 from app.db import SessionLocal
 from app.main import app
-from app.models import Application, Reminder, Resume, Score, StatusHistory, User
+from app.models import Application, Reminder, Resume, StatusHistory, User
 from app.routers.stats import utc_today
 from app.schemas import ApplicationStatus
 from scripts.seed_demo_data import DEMO_EMAIL, DEMO_PASSWORD, create_demo_user
@@ -18,7 +18,6 @@ STATS_TODAY = date(2026, 10, 5)
 def reset_database_and_date_override() -> None:
     app.dependency_overrides[utc_today] = lambda: STATS_TODAY
     with SessionLocal() as db:
-        db.query(Score).delete()
         db.query(Resume).delete()
         db.query(StatusHistory).delete()
         db.query(Reminder).delete()
@@ -28,7 +27,6 @@ def reset_database_and_date_override() -> None:
     yield
     app.dependency_overrides.pop(utc_today, None)
     with SessionLocal() as db:
-        db.query(Score).delete()
         db.query(Resume).delete()
         db.query(StatusHistory).delete()
         db.query(Reminder).delete()

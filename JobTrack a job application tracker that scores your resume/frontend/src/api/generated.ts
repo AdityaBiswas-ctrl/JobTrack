@@ -213,40 +213,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/applications/{application_id}/score": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Score Application */
-        post: operations["score_application_api_applications__application_id__score_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/applications/{application_id}/scores": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Application Scores */
-        get: operations["list_application_scores_api_applications__application_id__scores_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/stats": {
         parameters: {
             query?: never;
@@ -464,43 +430,6 @@ export interface components {
              * Format: date-time
              */
             uploaded_at: string;
-        };
-        /** ScoreOut */
-        ScoreOut: {
-            /** Id */
-            id: number;
-            /** Application Id */
-            application_id: number;
-            /** Resume Id */
-            resume_id: number;
-            /** Jd Hash */
-            jd_hash: string;
-            /** Match Score */
-            match_score: number | null;
-            /** Missing Keywords */
-            missing_keywords: string[] | null;
-            /**
-             * Scorer Status
-             * @enum {string}
-             */
-            scorer_status: "ok" | "timeout" | "error";
-            /** Latency Ms */
-            latency_ms: number;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /**
-             * Cache Hit
-             * @default false
-             */
-            cache_hit: boolean;
-        };
-        /** ScoreRequest */
-        ScoreRequest: {
-            /** Resume Id */
-            resume_id: number;
         };
         /** StatsOut */
         StatsOut: {
@@ -1110,72 +1039,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    score_application_api_applications__application_id__score_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                application_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ScoreRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ScoreOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    list_application_scores_api_applications__application_id__scores_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                application_id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ScoreOut"][];
-                };
             };
             /** @description Validation Error */
             422: {

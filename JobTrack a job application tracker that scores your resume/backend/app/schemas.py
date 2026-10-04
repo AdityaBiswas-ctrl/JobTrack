@@ -190,32 +190,6 @@ class ResumeOut(BaseModel):
         return value.astimezone(timezone.utc)
 
 
-class ScoreRequest(BaseModel):
-    resume_id: int
-
-    model_config = ConfigDict(extra="forbid")
-
-
-class ScoreOut(BaseModel):
-    id: int
-    application_id: int
-    resume_id: int
-    jd_hash: str
-    match_score: float | None
-    missing_keywords: list[str] | None
-    scorer_status: Literal["ok", "timeout", "error"]
-    latency_ms: int
-    created_at: datetime
-    cache_hit: bool = False
-
-    @field_validator("created_at", mode="before")
-    @classmethod
-    def stored_timestamp_is_utc(cls, value: datetime) -> datetime:
-        if value.tzinfo is None:
-            return value.replace(tzinfo=timezone.utc)
-        return value.astimezone(timezone.utc)
-
-
 class WeekCount(BaseModel):
     week_start: date
     count: int

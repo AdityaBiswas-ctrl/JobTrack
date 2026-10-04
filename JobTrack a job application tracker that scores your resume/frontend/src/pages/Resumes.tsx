@@ -50,7 +50,7 @@ export function Resumes() {
       <section className="resume-grid">
         {resumes.isLoading && <LoadingState label="Loading resumes" />}
         {resumes.error && <QueryError message={resumes.error.message} />}
-        {resumes.data?.length === 0 && <div className="panel full-width"><EmptyState title="No resumes just yet" description="Upload a PDF and it’ll be ready whenever you want a match score." /></div>}
+        {resumes.data?.length === 0 && <div className="panel full-width"><EmptyState title="No resumes just yet" description="Upload a PDF to keep a copy with your account." /></div>}
         {resumes.data?.map((resume) => (
           <article className="panel resume-card" key={resume.id}>
             <span aria-hidden="true" className="resume-icon">PDF</span>

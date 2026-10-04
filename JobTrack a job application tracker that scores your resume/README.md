@@ -1,159 +1,253 @@
 # JobTrack
 
-JobTrack is a FastAPI and MySQL job application tracker with authentication,
-application history, reminders, resume scoring, and dashboard statistics.
+> Keep your job search organized with application tracking, status history,
+> reminders, resume storage, and dashboard statistics.
 
-## Start the API and database
+JobTrack is a full-stack job application tracker built with React, TypeScript,
+FastAPI, and MySQL. It helps keep applications and follow-ups in one place.
+Resumes can be stored securely with your account; JobTrack does not score them.
 
-1. Copy `.env.example` to `.env`, replace the local database passwords, and
-   set `JWT_SECRET` to a random value of at least 32 bytes.
-2. Run `docker compose up --build`.
-3. Open `http://localhost:8000/health`. A healthy API returns `{"status":"ok"}`.
+## Learn the project
 
-To run the backend tests locally:
+New to the codebase? Read the [beginner-friendly project guide](docs/JobTrack-Beginner-Guide.pdf)
+for a plain-language walkthrough of the features, architecture, source files,
+and local setup.
+
+## Features
+
+- Track companies, roles, job links, job descriptions, notes, and application
+  statuses.
+- Review a chronological history of status changes.
+- Create reminders and see which follow-ups are due.
+- Upload and manage up to five PDF resumes per account.
+- View dashboard statistics for application activity and response rates.
+- Keep application and resume data scoped to the authenticated account.
+
+## Technology stack
+
+| Area | Technology |
+| --- | --- |
+| Frontend | React 18, TypeScript, Vite |
+| Data and forms | TanStack Query, React Hook Form, Zod |
+| Backend | Python 3.11+, FastAPI, SQLAlchemy |
+| Database | MySQL 8.4; SQLite supported for tests and local development |
+| Authentication | JWT bearer tokens and bcrypt password hashing |
+| Local orchestration | Docker Compose |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser["React + TypeScript<br/>Vite / nginx"] -->|"/api requests"| API["JobTrack API<br/>FastAPI"]
+    API -->|SQLAlchemy| DB[("MySQL")]
+    API -->|Stores PDF bytes| ResumeStore[("Database")]
+```
+
+The frontend sends requests to the JobTrack API under `/api`. In Docker Compose,
+nginx forwards those requests to the API container. The API authenticates and
+authorizes requests, then stores application and resume data in the database.
+PDF bytes are stored in the database rather than written to the API server's
+filesystem. JobTrack does not include a separate resume-scoring service or
+scoring API.
+
+## Repository structure
+
+```text
+.
+├── .env.example                         # Example local backend/database settings
+├── .gitignore                            # Ignores secrets, caches, and build output
+├── .vscode/settings.json                 # Workspace editor settings
+├── docker-compose.yml                    # MySQL, API, and frontend services
+├── README.md                             # Project overview and setup guide
+├── docs/
+│   └── JobTrack-Beginner-Guide.pdf        # Beginner's guide to the complete project
+├── backend/
+│   ├── Dockerfile                        # Backend container image
+│   ├── requirements.txt                  # Python dependencies
+│   ├── app/
+│   │   ├── config.py                     # Environment loading and validation
+│   │   ├── db.py                         # SQLAlchemy engine and DB sessions
+│   │   ├── main.py                       # FastAPI app, routers, health check
+│   │   ├── models.py                     # Database entities and relationships
+│   │   ├── schemas.py                    # API request and response models
+│   │   ├── security.py                   # Password hashing and JWT auth
+│   │   ├── routers/
+│   │   │   ├── __init__.py               # Router package marker
+│   │   │   ├── applications.py           # Applications and status history
+│   │   │   ├── auth.py                   # Signup, login, and account endpoints
+│   │   │   ├── reminders.py              # Reminder creation and completion
+│   │   │   ├── resumes.py                # Resume upload and management
+│   │   │   └── stats.py                  # Dashboard statistics endpoint
+│   │   ├── services/
+│   │   │   ├── __init__.py               # Service package marker
+│   │   │   └── stats_service.py          # Dashboard statistics calculations
+│   │   ├── scripts/
+│   │   │   ├── __init__.py               # Script package marker
+│   │   │   └── seed_demo_data.py         # Local demo data generator
+│   │   └── tests/
+│   │       ├── conftest.py               # Shared pytest configuration
+│   │       ├── test_applications.py      # Application API tests
+│   │       ├── test_auth.py              # Authentication tests
+│   │       ├── test_health.py            # Health endpoint tests
+│   │       ├── test_resumes.py           # Resume upload and management tests
+│   │       ├── test_stats.py              # Statistics tests
+│   │       └── test_status_reminders.py  # Status history and reminder tests
+└── frontend/
+    ├── .env.example                      # Example frontend environment settings
+    ├── Dockerfile                        # Frontend build and nginx image
+    ├── eslint.config.js                  # ESLint configuration
+    ├── index.html                        # Vite HTML entry point
+    ├── nginx.conf                        # Static hosting and API proxy
+    ├── package.json                      # Frontend scripts and dependencies
+    ├── package-lock.json                 # Locked npm dependencies
+    ├── tsconfig.json                     # TypeScript configuration
+    ├── vite.config.ts                    # Vite and test configuration
+    └── src/
+        ├── App.tsx                       # Routes and app-level providers
+        ├── App.test.tsx                  # App-level tests
+        ├── main.tsx                      # React entry point
+        ├── styles.css                    # Global styles and layout
+        ├── api/
+        │   ├── client.ts                 # Typed API calls and auth handling
+        │   ├── client.test.ts             # API client tests
+        │   ├── format.ts                 # Shared display formatting helpers
+        │   ├── format.test.ts             # Formatting tests
+        │   └── generated.ts              # OpenAPI-generated API types
+        ├── components/
+        │   ├── ApplicationForm.tsx       # Create/edit application form
+        │   ├── ErrorBoundary.tsx         # Rendering error fallback
+        │   ├── Layout.tsx                # Authenticated app shell/navigation
+        │   ├── PageState.tsx             # Loading, empty, and error states
+        │   ├── ProtectedRoute.tsx        # Authenticated route guard
+        │   ├── ProtectedRoute.test.tsx   # Route guard tests
+        │   ├── Toast.tsx                 # Toast notification provider
+        │   └── ToastContext.ts           # Toast notification context
+        ├── pages/
+        │   ├── ApplicationDetail.tsx     # Application details/history/reminders
+        │   ├── Applications.tsx          # Application list and filters
+        │   ├── AuthPage.tsx              # Signup and login forms
+        │   ├── AuthPage.test.tsx         # Authentication page tests
+        │   ├── Dashboard.tsx             # Statistics and charts
+        │   ├── Resumes.tsx               # Resume upload and management
+        │   └── Settings.tsx              # Account settings and deletion
+        └── test/
+            ├── server.ts                 # Mock Service Worker test server
+            └── setup.ts                  # Shared frontend test setup
+```
+
+## Getting started
+
+### Requirements
+
+- Docker Desktop with Docker Compose, or Python 3.11+ and Node.js 20+ to run
+  services individually.
+
+### Run with Docker Compose
+
+1. Copy `.env.example` to `.env` in the project root.
+2. Set unique local MySQL passwords and replace `JWT_SECRET` with a random
+   secret that is at least 32 bytes.
+3. Build and start MySQL, the API, and the frontend:
+
+   ```powershell
+   docker compose up --build
+   ```
+
+4. Open the frontend at [http://localhost:3000](http://localhost:3000). The API
+   health check is at [http://localhost:8000/health](http://localhost:8000/health)
+   and interactive API docs are at [http://localhost:8000/docs](http://localhost:8000/docs).
+5. Create an account from the signup page.
+
+Stop the services with `Ctrl+C`, or run `docker compose down` in another
+terminal. To also remove the local MySQL data volume, run
+`docker compose down --volumes`.
+
+### Run the frontend separately
+
+Start the API and database first, then run from `frontend/`:
 
 ```powershell
-cd backend
+npm ci
+npm run dev
+```
+
+Vite serves the frontend at [http://localhost:5173](http://localhost:5173) and
+proxies `/api` and `/health` to `http://127.0.0.1:8000`.
+
+## Configuration
+
+Copy `.env.example` to `.env` for local Compose use. The root environment file
+configures MySQL and the API:
+
+| Variable | Purpose |
+| --- | --- |
+| `MYSQL_DATABASE` | Database created by MySQL |
+| `MYSQL_USER` | Application database user |
+| `MYSQL_PASSWORD` | Application database password |
+| `MYSQL_ROOT_PASSWORD` | Local MySQL root password |
+| `DATABASE_URL` | SQLAlchemy connection string |
+| `JWT_SECRET` | JWT signing secret; use at least 32 bytes |
+| `ALLOWED_ORIGINS` | Comma-separated exact origins for cross-origin browser use |
+
+The Compose frontend is built with `VITE_API_URL=/api` and served through
+nginx. For a separately hosted frontend, see `frontend/.env.example`. The
+frontend API URL is embedded at build time. When frontend and API origins
+differ, add the exact frontend origin to `ALLOWED_ORIGINS`; wildcard origins
+are rejected.
+
+## API overview
+
+API routes are served under `/api`, except `/health` and FastAPI's `/docs`.
+Most endpoints require a bearer token from signup/login.
+
+| Area | Main routes |
+| --- | --- |
+| Authentication | `POST /api/auth/signup`, `POST /api/auth/login`, `GET /api/auth/me` |
+| Applications | `/api/applications` — create, list, update, and delete |
+| Status history | `PATCH /api/applications/{id}/status`, `GET /api/applications/{id}/history` |
+| Reminders | `/api/applications/{id}/reminders`, `GET /api/reminders`, `PATCH /api/reminders/{id}/done` |
+| Resumes | `POST /api/resumes`, `GET /api/resumes`, `DELETE /api/resumes/{id}` |
+| Dashboard | `GET /api/stats` |
+
+Open `/docs` on the API server for the interactive OpenAPI interface. Generate
+frontend API types with `npm run generate:api` while the API is running.
+
+## Tests and quality checks
+
+Run backend tests from `backend/`:
+
+```powershell
 python -m pip install -r requirements.txt
 python -m pytest
 ```
 
-The ATS scorer contract is documented in [docs/scorer_contract.md](docs/scorer_contract.md)
-and was verified against the local scorer source. Set `SCORER_URL` to the scorer
-base URL (for example `http://localhost:8001`) and
-`SCORER_TIMEOUT_SECONDS` to the request timeout; it defaults to 30 seconds.
-
-## Authentication
-
-Sign up with `POST /api/auth/signup`, then open `/docs` and use **Authorize**.
-Enter the signup email in the OAuth2 form's `username` field and the password
-in its `password` field. The login endpoint accepts this form and returns a
-short-lived bearer token. `JWT_SECRET` must be set to a random value of at least
-32 bytes.
-
-## Applications API
-
-Authenticated application endpoints are under `/api/applications`. Create an
-application with `POST`; list with `GET` and optional `status`, `q`, `limit`
-(default 20, maximum 100), and `offset` query parameters. Lists are ordered by
-creation time descending, then ID descending, and include `items`, `total`,
-`limit`, and `offset`. Use `GET`, `PATCH`, or `DELETE /api/applications/{id}`
-for one application. Updates cannot change status; a dedicated status endpoint
-records every transition in history. Application lookups are always scoped to the
-authenticated user and return 404 for records they do not own.
-History, reminder, and score foreign keys use `ON DELETE CASCADE` so deleting an
-application removes dependent rows as well.
-
-## Status history and reminders
-
-`PATCH /api/applications/{id}/status` changes status and appends a history
-record in one database transaction. Creating an application also records its
-initial transition from an empty status to `wishlist`. Repeating the current
-status returns the application without adding a duplicate history row.
-`GET /api/applications/{id}/history` returns events from oldest to newest.
-
-Create a reminder with `POST /api/applications/{id}/reminders`; `due_at` must
-include a timezone and is normalized to UTC. `GET /api/reminders?due=true`
-returns only incomplete reminders due now or earlier, ordered by due time;
-without `due=true`, it lists all reminders for the current user with
-`limit`/`offset` pagination. Both forms include the related company and role.
-`PATCH /api/reminders/{id}/done` is idempotent. Reminder ownership is checked
-through its application, and deleting an application cascades to its history
-and reminders. The due-time index is on `due_at`; a composite `(done, due_at)`
-index may be worth measuring with MySQL `EXPLAIN` once the table has realistic
-data.
-
-## Resumes and scoring
-
-Upload PDFs with `POST /api/resumes` using multipart form fields `file` and
-`label`. Files are checked for the `%PDF-` signature and capped at 2 MB; each
-account can store up to five resumes. JobTrack stores the bytes in MySQL and
-does not write uploaded filenames to disk.
-
-Score an application with `POST /api/applications/{id}/score` and JSON
-`{"resume_id": 1}`. The scorer receives the resume and the application's job
-description using the verified ATS multipart fields. Successful normalized
-resume/job-description pairs are cached; failures are saved for score history
-but are never reused as cache hits. Scorer timeouts and errors return 503 while
-other JobTrack routes remain available. The scorer may be waking up, and with
-the default 30-second timeout plus one retry a score request may take about a
-minute. `GET /api/applications/{id}/scores` returns score history.
-
-Scoring is limited to 10 uncached attempts per user per hour using an
-in-memory counter. The counter resets on API restart and is not shared across
-multiple API instances; a distributed deployment would need a shared limiter.
-
-## Dashboard statistics
-
-`GET /api/stats` is scoped to the authenticated user and returns:
-
-- **Counts by status:** current application rows grouped by status. Every
-  supported status is returned, with zero when there are no matching rows.
-- **Applications per week:** applications grouped by `applied_on` into
-  Monday-starting weeks, for the current week and the previous 11 weeks.
-  Missing weeks are included with count zero; applications without an
-  `applied_on` date are not counted.
-- **Response rate:** among applications whose current status is not
-  `wishlist`, the percentage that ever reached `online_assessment`,
-  `interview`, `offer`, or `rejected` in status history. A later rejection
-  still counts as a response; `withdrawn` alone does not.
-- **Days to first response:** average and median UTC calendar-day differences
-  from `applied_on` to the earliest response history timestamp. Both are
-  `null` when there are no response dates. The stat is only as accurate as the
-  dates and history entered; backfilled applications with newly entered
-  history can skew it.
-
-The current-week boundary is based on UTC `today` passed into the stats
-calculation. Week aggregation is performed on SQL-grouped application dates,
-then bucketed in Python to keep the implementation compatible with SQLite test
-databases and MySQL.
-
-Create the hand-countable local data set from `backend` with
-`python -m scripts.seed_demo_data` (six applications). For the P9 latency run,
-use `python -m scripts.seed_demo_data --count 1000`. The seed is for local
-demonstrations and benchmarking only. Re-running it replaces only the
-`demo@jobtrack.local` account and its associated data; its local demo password
-is `demo-password`.
-
-## React frontend
-
-The React 18 and TypeScript frontend lives in `frontend/`. From the repository
-root, start the API using the setup above, then run:
+Run frontend checks from `frontend/`:
 
 ```powershell
-cd frontend
 npm ci
-npm run generate:api
-npm run dev
-```
-
-Vite serves the UI at `http://localhost:5173` and proxies `/api` to
-`http://127.0.0.1:8000`, so local development does not need browser CORS
-configuration. The generated `src/api/generated.ts` types come from FastAPI's
-`/openapi.json`; regenerate them when the API contract changes.
-
-To run frontend checks and create the production build:
-
-```powershell
 npm run lint
 npm run typecheck
 npm test
 npm run build
 ```
 
-The UI uses TanStack Query for server data and invalidates affected queries
-after mutations. The central API client stores the bearer token in memory and
-`sessionStorage`, which keeps a session across refreshes in the same tab but
-means an XSS vulnerability could read it. React renders user-entered notes and
-job descriptions as text; the UI does not use `dangerouslySetInnerHTML`.
+Generate six local demo applications from `backend/`:
 
-Set `ALLOWED_ORIGINS` to a comma-separated list of exact browser origins
-(scheme and host, without a trailing slash) when serving the API and frontend
-from different origins. Wildcard origins are rejected. `VITE_API_URL` is
-embedded in the frontend at build time; changing it requires rebuilding the
-frontend image or static site. For the included Docker Compose setup, the UI
-is served on `http://localhost:3000` and its nginx proxy forwards `/api` to the
-API.
+```powershell
+python -m scripts.seed_demo_data
+```
 
-The signup page and any public demo should use sample data only. Do not upload
-your real resume or enter real applications into a public instance.
+For a larger dataset, use `python -m scripts.seed_demo_data --count 1000`.
+Re-running the script replaces only the `demo@jobtrack.local` account and its
+data. Its local demo password is `demo-password`; use this demo account only
+with non-sensitive local data.
+
+## Security and privacy
+
+- Use unique, randomly generated `JWT_SECRET` and database passwords. Never
+  commit `.env`.
+- Uploaded PDFs must be no larger than 2 MB and are stored in the database.
+- Application and resume access is scoped to the authenticated user. Deleting
+  an application also deletes its status history and reminders.
+- Use sample data for public deployments. Do not upload a real resume or enter
+  private application details into a public instance.

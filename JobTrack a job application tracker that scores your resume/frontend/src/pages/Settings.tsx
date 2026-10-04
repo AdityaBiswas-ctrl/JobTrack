@@ -31,7 +31,7 @@ export function Settings() {
       </section>
       <section className="panel settings-panel danger-zone">
         <p className="eyebrow">PERMANENT ACTION</p><h2>Delete your account</h2>
-        <p className="muted">This permanently deletes your applications, reminders, history, resumes and scores.</p>
+        <p className="muted">This permanently deletes your applications, reminders, history, and resumes.</p>
         <button className="button button-danger" disabled={remove.isPending} onClick={() => {
           if (window.confirm("Permanently delete your account and all JobTrack data? This cannot be undone.")) remove.mutate();
         }} type="button">{remove.isPending ? "Deleting…" : "Delete my account and data"}</button>

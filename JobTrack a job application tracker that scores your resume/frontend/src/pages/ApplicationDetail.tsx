@@ -5,7 +5,6 @@ import type { ApplicationStatus } from "../api/client";
 import { api } from "../api/client";
 import { formatDate, formatStatus, formatTimestamp, statuses } from "../api/format";
 import { EmptyState, LoadingState, QueryError } from "../components/PageState";
-import { ScoreResumePanel } from "../components/ScoreResumePanel";
 import { useToast } from "../components/ToastContext";
 
 export function ApplicationDetail() {
@@ -28,13 +27,6 @@ export function ApplicationDetail() {
     queryFn: () => api.history(applicationId),
     enabled: application.isSuccess,
   });
-  const resumes = useQuery({ queryKey: ["resumes"], queryFn: api.resumes });
-  const scores = useQuery({
-    queryKey: ["scores", applicationId],
-    queryFn: () => api.scores(applicationId),
-    enabled: application.isSuccess,
-  });
-
   const statusMutation = useMutation({
     mutationFn: () => api.changeStatus(applicationId, nextStatus, statusNote || undefined),
     onSuccess: () => {
@@ -108,19 +100,6 @@ export function ApplicationDetail() {
             ))}
           </ol>
           <div className="divider" />
-          <h2>Resume scores</h2>
-          {scores.data?.length === 0 && <p className="muted">Scores for this application will appear here.</p>}
-          <div className="score-list">
-            {scores.data?.map((score) => (
-              <article className="score-row" key={score.id}>
-                <strong>{score.match_score === null ? "Unavailable" : `${score.match_score}% match`}</strong>
-                <span className={`pill ${score.scorer_status === "ok" ? "pill-good" : "pill-warn"}`}>{score.scorer_status}</span>
-                {score.cache_hit && <span className="pill">Cached</span>}
-                <span className="muted">{formatTimestamp(score.created_at)} · {score.latency_ms} ms</span>
-                {score.missing_keywords && <p className="muted">Missing: {score.missing_keywords.join(", ") || "none"}</p>}
-              </article>
-            ))}
-          </div>
         </section>
         <aside className="detail-sidebar">
           <section className="panel">
@@ -143,13 +122,8 @@ export function ApplicationDetail() {
               <button className="button button-full" disabled={reminderMutation.isPending} type="submit">Add reminder</button>
             </form>
           </section>
-          <ScoreResumePanel
-            applicationId={applicationId}
-            hasJobDescription={Boolean(item.jd_text?.trim())}
-            resumes={resumes.data ?? []}
-          />
           <button className="button button-danger button-full" disabled={deleteMutation.isPending} onClick={() => {
-            if (window.confirm("Delete this application and its history, reminders, and scores?")) deleteMutation.mutate();
+            if (window.confirm("Delete this application and its history and reminders?")) deleteMutation.mutate();
           }} type="button">
             Delete application
           </button>

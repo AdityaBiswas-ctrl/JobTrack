@@ -9,12 +9,10 @@ export type StatusHistory = components["schemas"]["StatusHistoryOut"];
 export type Reminder = components["schemas"]["ReminderOut"];
 export type ReminderList = components["schemas"]["ReminderList"];
 export type Resume = components["schemas"]["ResumeOut"];
-export type Score = components["schemas"]["ScoreOut"];
 export type Stats = components["schemas"]["StatsOut"];
 export type ApplicationStatus = Application["status"];
 
 const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
-const SCORING_TIMEOUT_MS = 65_000;
 const DEFAULT_TIMEOUT_MS = 15_000;
 let memoryToken: string | null = sessionStorage.getItem("jobtrack_token");
 
@@ -147,13 +145,5 @@ export const api = {
     return request<Resume>("/resumes", { method: "POST", body });
   },
   deleteResume: (id: number) => request<void>(`/resumes/${id}`, { method: "DELETE" }),
-  score: (applicationId: number, resumeId: number) =>
-    request<Score>(
-      `/applications/${applicationId}/score`,
-      { method: "POST", body: JSON.stringify({ resume_id: resumeId }) },
-      SCORING_TIMEOUT_MS,
-    ),
-  scores: (applicationId: number) =>
-    request<Score[]>(`/applications/${applicationId}/scores`),
   stats: () => request<Stats>("/stats"),
 };
