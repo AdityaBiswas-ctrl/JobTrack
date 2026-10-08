@@ -7,11 +7,6 @@ JobTrack is a full-stack job application tracker built with React, TypeScript,
 FastAPI, and MySQL. It helps keep applications and follow-ups in one place.
 Resumes can be stored securely with your account; JobTrack does not score them.
 
-## Learn the project
-
-New to the codebase? Read the [beginner-friendly project guide](docs/JobTrack-Beginner-Guide.pdf)
-for a plain-language walkthrough of the features, architecture, source files,
-and local setup.
 
 ## Features
 
@@ -58,9 +53,7 @@ scoring API.
 ├── .gitignore                            # Ignores secrets, caches, and build output
 ├── .vscode/settings.json                 # Workspace editor settings
 ├── docker-compose.yml                    # MySQL, API, and frontend services
-├── README.md                             # Project overview and setup guide
-├── docs/
-│   └── JobTrack-Beginner-Guide.pdf        # Beginner's guide to the complete project
+├── README.md                             # Project overview  
 ├── backend/
 │   ├── Dockerfile                        # Backend container image
 │   ├── requirements.txt                  # Python dependencies
