@@ -22,7 +22,7 @@ services:
           name: jobtrack-frontend
           property: url
 
-  - type: static
+  - type: static_site
     name: jobtrack-frontend
     rootDir: JobTrack/frontend
     buildCommand: npm ci && npm run build
