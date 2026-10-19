@@ -15,8 +15,20 @@ ALLOWED_ORIGINS = [
 if "*" in ALLOWED_ORIGINS:
     raise RuntimeError("ALLOWED_ORIGINS must list exact origins; wildcards are not allowed")
 
+ALLOWED_ORIGINS = [
+    origin.rstrip("/")
+    if "://" in origin
+    else f"https://{origin.rstrip('/')}"
+    for origin in ALLOWED_ORIGINS
+]
+
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL must be set in the environment or .env file")
+
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET must be set in the environment or .env file")

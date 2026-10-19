@@ -12,7 +12,10 @@ export type Resume = components["schemas"]["ResumeOut"];
 export type Stats = components["schemas"]["StatsOut"];
 export type ApplicationStatus = Application["status"];
 
-const API_URL = (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
+const API_HOST = import.meta.env.VITE_API_HOST?.replace(/\/$/, "");
+const API_URL = API_HOST
+  ? `${/^https?:\/\//.test(API_HOST) ? "" : "https://"}${API_HOST}/api`
+  : (import.meta.env.VITE_API_URL || "/api").replace(/\/$/, "");
 const DEFAULT_TIMEOUT_MS = 15_000;
 let memoryToken: string | null = sessionStorage.getItem("jobtrack_token");
 

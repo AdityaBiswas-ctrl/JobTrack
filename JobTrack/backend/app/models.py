@@ -112,7 +112,7 @@ class Resume(Base):
     label: Mapped[str] = mapped_column(String(120), nullable=False)
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
     file_bytes: Mapped[bytes] = mapped_column(
-        LONGBLOB().with_variant(LargeBinary(), "sqlite"),
+        LargeBinary().with_variant(LONGBLOB(), "mysql"),
         nullable=False,
     )
     uploaded_at: Mapped[datetime] = mapped_column(

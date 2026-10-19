@@ -167,6 +167,18 @@ npm run dev
 Vite serves the frontend at [http://localhost:5173](http://localhost:5173) and
 proxies `/api` and `/health` to `http://127.0.0.1:8000`.
 
+### Deploy to Render
+
+The repository includes a Render Blueprint (`render.yaml`) for the API,
+frontend, and PostgreSQL database. To deploy it, create a Blueprint in Render
+from this Git repository and apply the generated service configuration. The
+Blueprint generates the JWT secret and wires the database and frontend/API
+origins automatically.
+
+The included plans are free-tier defaults for evaluation. Review Render's
+current free-service and database-retention limits before deploying real user
+data; choose suitable paid plans for a persistent production deployment.
+
 ## Configuration
 
 Copy `.env.example` to `.env` for local Compose use. The root environment file
@@ -178,7 +190,7 @@ configures MySQL and the API:
 | `MYSQL_USER` | Application database user |
 | `MYSQL_PASSWORD` | Application database password |
 | `MYSQL_ROOT_PASSWORD` | Local MySQL root password |
-| `DATABASE_URL` | SQLAlchemy connection string |
+| `DATABASE_URL` | SQLAlchemy connection string (MySQL locally; PostgreSQL on Render) |
 | `JWT_SECRET` | JWT signing secret; use at least 32 bytes |
 | `ALLOWED_ORIGINS` | Comma-separated exact origins for cross-origin browser use |
 
