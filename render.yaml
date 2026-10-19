@@ -17,10 +17,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ALLOWED_ORIGINS
-        fromService:
-          type: static
-          name: jobtrack-frontend
-          property: url
+        value: https://jobtrack-frontend.onrender.com
 
   - type: static_site
     name: jobtrack-frontend
