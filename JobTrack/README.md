@@ -173,7 +173,8 @@ The repository includes a [root-level Render Blueprint](../render.yaml) for
 the API, frontend, and PostgreSQL database. To deploy it, create a Blueprint
 in Render from this Git repository and apply the generated service
 configuration. The Blueprint generates the JWT secret and wires the database
-and frontend/API origins automatically.
+and frontend/API origins automatically. The frontend is served by Vite's
+preview server as a free web service; this is suitable for a demo deployment.
 
 The included plans are free-tier defaults for evaluation. Review Render's
 current free-service and database-retention limits before deploying real user
