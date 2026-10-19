@@ -19,7 +19,7 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://jobtrack-frontend.onrender.com
 
-  - type: static_site
+  - type: static
     name: jobtrack-frontend
     rootDir: JobTrack/frontend
     buildCommand: npm ci && npm run build
