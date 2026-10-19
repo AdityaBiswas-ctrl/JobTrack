@@ -3,7 +3,7 @@ services:
     name: jobtrack-api
     runtime: python
     plan: free
-    rootDir: backend
+    rootDir: JobTrack/backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
@@ -24,7 +24,7 @@ services:
 
   - type: static
     name: jobtrack-frontend
-    rootDir: frontend
+    rootDir: JobTrack/frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     envVars:
